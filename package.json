@@ -1,0 +1,18 @@
+{
+  "name": "@dontblink/sdk",
+  "version": "0.1.0",
+  "description": "Launch tokens on dontblink (Robinhood Chain) from code — you keep your key, we just build the transaction right.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": ["dontblink", "robinhood-chain", "launchpad", "erc20", "uniswap-v3"],
+  "license": "BUSL-1.1",
+  "peerDependencies": { "viem": "^2.0.0" },
+  "devDependencies": { "typescript": "^5.9.0", "viem": "^2.0.0" }
+}
