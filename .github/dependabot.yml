@@ -1,0 +1,20 @@
+# Dependabot：每周查一次依赖更新，每一类最多同时开 3 个 PR。2026-10-19 由仓库所有者要求加上。
+# - 它开的 PR 和人开的一样要审；main 受规则集保护，照常走 PR + 批准。
+# - cooldown 7 天：新版本发布满 7 天才提，和 AGENTS.md 第 5 条一致。
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 7
