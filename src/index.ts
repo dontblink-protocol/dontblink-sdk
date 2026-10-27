@@ -13,6 +13,7 @@ import { PORTAL, portalAbi, predictToken, mineVanitySalt, verifyOnChain, VANITY_
 export * from './core.js'
 export * from './params.js'
 export * from './stock.js'
+export * from './read.js'
 
 export type LaunchResult = {
   /** 新币地址。 */

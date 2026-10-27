@@ -134,6 +134,35 @@ have already verified once.
 
 ---
 
+## Read-only: recent launches, fees, risk tags
+
+For agents and dashboards that only need to look. Nothing here signs or touches a key.
+
+```bash
+npx -p @dontblink/sdk dontblink launches --limit 20     # newest first, max 50
+npx -p @dontblink/sdk dontblink fees
+```
+
+```ts
+import { listLaunches, getFees } from '@dontblink/sdk'
+
+const launches = await listLaunches(publicClient, { limit: 20 })
+// [{ time, symbol, mode, quoteSymbol, fees, rules, riskTags: ['quote:NVDA', ...] }, ...]
+```
+
+Three rules, on purpose:
+
+- **Facts, not picks.** Results are newest-first and that is the only order. Risk tags are
+  things you can check on-chain (what it is priced in, the mode, burns, how the per-account
+  cap is enforced, repeat creators, missing socials). No scores, no "trending".
+- **No graduation queries.** Bonding-curve progress is not read at all — it only serves
+  racing other buyers.
+- **Rate-limited.** RPC calls are spaced 200 ms apart and a call returns at most 50 launches.
+
+An agent skill wrapping the CLI lives in [`skills/dontblink-readonly`](skills/dontblink-readonly/SKILL.md).
+
+---
+
 ## Reference
 
 **Contracts**
