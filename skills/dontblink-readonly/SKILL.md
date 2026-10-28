@@ -10,7 +10,7 @@ commands: it cannot launch, buy, sell, or sign, and it never asks for a key.
 
 ## Commands
 
-**Not on npm yet** — it will be published as `@dontblink-protocol/sdk`. Until then, run it from
+**Not on npm yet** — it will be published as `@dontblink/sdk`. Until then, run it from
 the source repository:
 
 ```bash

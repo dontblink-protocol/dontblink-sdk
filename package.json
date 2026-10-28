@@ -1,5 +1,5 @@
 {
-  "name": "@dontblink-protocol/sdk",
+  "name": "@dontblink/sdk",
   "version": "0.2.0",
   "description": "Launch tokens on dontblink (Robinhood Chain) from code — you keep your key, we just build the transaction right.",
   "type": "module",

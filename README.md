@@ -1,4 +1,4 @@
-# @dontblink-protocol/sdk
+# @dontblink/sdk
 
 Launch tokens on [dontblink](https://dontblink.community) (Robinhood Chain, 4663) from code.
 
@@ -7,7 +7,7 @@ mode, vanity salt, and the stock-quoting tick that fails silently if you get it 
 Signing and broadcasting happen with your own viem wallet. There is no server in the
 middle and nothing to trust us about.
 
-Not on npm yet — it will be published as `@dontblink-protocol/sdk`. Until then, install from GitHub:
+Not on npm yet — it will be published as `@dontblink/sdk`. Until then, install from GitHub:
 
 ```bash
 git clone https://github.com/dontblink-protocol/dontblink-sdk && cd dontblink-sdk
@@ -21,7 +21,7 @@ npm ci && npm run build
 ```ts
 import { createPublicClient, createWalletClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { launch, instantParams, DEFAULT_RPC } from '@dontblink-protocol/sdk'
+import { launch, instantParams, DEFAULT_RPC } from '@dontblink/sdk'
 
 const account = privateKeyToAccount(process.env.PK as `0x${string}`)
 const publicClient = createPublicClient({ transport: http(DEFAULT_RPC) })
@@ -46,7 +46,7 @@ a lock contract that has no withdrawal path. You pay the launch fee and gas, not
 ## The four modes
 
 ```ts
-import { instantParams, curveParams, queueParams, stockQuotedParams } from '@dontblink-protocol/sdk'
+import { instantParams, curveParams, queueParams, stockQuotedParams } from '@dontblink/sdk'
 ```
 
 | Builder | What it does |
@@ -68,7 +68,7 @@ Your token can trade against NVDA or TSLA instead of ETH. The opening range has 
 derived from that stock's own ETH pool:
 
 ```ts
-import { launch, stockQuotedParams, stockMagnitude } from '@dontblink-protocol/sdk'
+import { launch, stockQuotedParams, stockMagnitude } from '@dontblink/sdk'
 
 const NVDA = '0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC'
 const { magnitude, info } = await stockMagnitude(publicClient, NVDA)
@@ -121,7 +121,7 @@ flip side: a salt mined for one wallet is worthless to another.
 Mining it yourself:
 
 ```ts
-import { mineVanitySalt, predictToken } from '@dontblink-protocol/sdk'
+import { mineVanitySalt, predictToken } from '@dontblink/sdk'
 const { salt, address, vanity, tries } = mineVanitySalt(myAddress, { suffix: 'dbdb' })
 ```
 
@@ -150,7 +150,7 @@ node dist/cli.js fees
 ```
 
 ```ts
-import { listLaunches, getFees } from '@dontblink-protocol/sdk'
+import { listLaunches, getFees } from '@dontblink/sdk'
 
 const launches = await listLaunches(publicClient, { limit: 20 })
 // [{ time, symbol, mode, quoteSymbol, fees, rules, riskTags: ['quote:NVDA', ...] }, ...]
