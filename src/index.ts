@@ -1,4 +1,4 @@
-// @dontblink/sdk —— 从代码里发币。
+// @dontblink-protocol/sdk —— 从代码里发币。
 //
 // **你自己签名，我们不碰你的钥匙。** 这个包做的是把交易构造对：正确的模式参数、
 // 挖靓号盐、股票计价那个算错也不报错的 tick。签名和广播用你自己的 viem WalletClient。
@@ -49,7 +49,7 @@ export type LaunchOptions = {
  * ```ts
  * import { createPublicClient, createWalletClient, http } from 'viem'
  * import { privateKeyToAccount } from 'viem/accounts'
- * import { launch, instantParams } from '@dontblink/sdk'
+ * import { launch, instantParams } from '@dontblink-protocol/sdk'
  *
  * const account = privateKeyToAccount(process.env.PK as `0x${string}`)
  * const publicClient = createPublicClient({ transport: http(RPC) })

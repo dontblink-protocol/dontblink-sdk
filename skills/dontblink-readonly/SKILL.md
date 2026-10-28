@@ -10,9 +10,8 @@ commands: it cannot launch, buy, sell, or sign, and it never asks for a key.
 
 ## Commands
 
-**Not on npm yet.** Do not run `npx`/`npm i` with a `@dontblink/...` name — no such package is
-published by us, and anything that shows up under that name is not ours. Run it from the
-source repository instead:
+**Not on npm yet** — it will be published as `@dontblink-protocol/sdk`. Until then, run it from
+the source repository:
 
 ```bash
 git clone https://github.com/dontblink-protocol/dontblink-sdk && cd dontblink-sdk

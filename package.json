@@ -1,5 +1,5 @@
 {
-  "name": "@dontblink/sdk",
+  "name": "@dontblink-protocol/sdk",
   "version": "0.2.0",
   "description": "Launch tokens on dontblink (Robinhood Chain) from code — you keep your key, we just build the transaction right.",
   "type": "module",
@@ -16,6 +16,9 @@
     "skills",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
