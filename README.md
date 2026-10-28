@@ -11,6 +11,10 @@ middle and nothing to trust us about.
 npm i @dontblink/sdk viem
 ```
 
+> **Not on npm yet.** The `@dontblink` scope is not registered, so the line above will fail —
+> and anything published under that name by someone else is not ours. Until it is published,
+> install from this repository.
+
 ---
 
 ## Launch a token
@@ -138,9 +142,12 @@ have already verified once.
 
 For agents and dashboards that only need to look. Nothing here signs or touches a key.
 
+Not published to npm yet — run it from this repo:
+
 ```bash
-npx -p @dontblink/sdk dontblink launches --limit 20     # newest first, max 50
-npx -p @dontblink/sdk dontblink fees
+npm ci && npm run build
+node dist/cli.js launches --limit 20     # newest first, max 50
+node dist/cli.js fees
 ```
 
 ```ts
@@ -158,6 +165,9 @@ Three rules, on purpose:
 - **No graduation queries.** Bonding-curve progress is not read at all — it only serves
   racing other buyers.
 - **Rate-limited.** RPC calls are spaced 200 ms apart and a call returns at most 50 launches.
+  The limit is per process: it reads the public Robinhood Chain RPC directly, so several agents
+  running it at once add up. A shared read API with one rate limit is the next step; the z500
+  indexer we run today only indexes the BSC contracts, not the Robinhood Chain portal.
 
 An agent skill wrapping the CLI lives in [`skills/dontblink-readonly`](skills/dontblink-readonly/SKILL.md).
 

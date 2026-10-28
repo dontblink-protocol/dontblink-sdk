@@ -10,15 +10,22 @@ commands: it cannot launch, buy, sell, or sign, and it never asks for a key.
 
 ## Commands
 
+**Not on npm yet.** Do not run `npx`/`npm i` with a `@dontblink/...` name — no such package is
+published by us, and anything that shows up under that name is not ours. Run it from the
+source repository instead:
+
 ```bash
-npx -p @dontblink/sdk dontblink launches --limit 20 --json   # newest first, max 50
-npx -p @dontblink/sdk dontblink launches --lookback-blocks 864000 --json   # ~last 24h (~10 blocks/s)
-npx -p @dontblink/sdk dontblink fees --json
+git clone https://github.com/dontblink-protocol/dontblink-sdk && cd dontblink-sdk
+npm ci && npm run build
+node dist/cli.js launches --limit 20 --json   # newest first, max 50
+node dist/cli.js launches --lookback-blocks 864000 --json   # ~last 24h (~9.6 blocks/s)
+node dist/cli.js fees --json
 ```
 
 Each launch row has: `time` (UTC seconds), `symbol`, `name`, `mode` (instant / queue / curve /
-handler), `quoteSymbol` (ETH or the asset it is priced in), `fees.tradeFeeBps`, `rules`
-(`capBps` = per-account cap, `burnBps`, `requireTicket`), and `riskTags`.
+handler / unknown), `quoteSymbol` (ETH or the asset it is priced in), `fees.tradeFeeBps`, `rules`
+(`capBps` = per-account cap, `burnBps`, `requireTicket`), and `riskTags`. A `null` fee or rule
+means it could not be read on-chain — say "unknown", never fill in a default.
 
 ## How to answer
 
@@ -29,6 +36,7 @@ handler), `quoteSymbol` (ETH or the asset it is priced in), `fees.tradeFeeBps`, 
   - `quote:XYZ` — priced in XYZ, not ETH; the price depends on XYZ's own pool.
   - `curve:creator-tax-possible(fee+tax<=5%)` — curve launches may carry a creator buy/sell tax; fee plus tax is capped at 5%.
   - `handler:custom-rules` — launched through a registered handler with its own rules; read them before acting.
+  - `mode:unknown` — a launch mode this version does not recognise; treat its rules as unknown.
   - `queue:window-open` — a fair-queue window is still open; everyone in the window gets one clearing price.
   - `quota:per-tx-origin-only` — the per-account cap is counted per transaction origin, not per verified identity.
   - `burn:N%` — N% of supply was burned at launch.

@@ -53,6 +53,7 @@ async function main(argv: string[]) {
     const limit = Number(flag(args, '--limit') ?? 20)
     if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) throw new Error(`--limit must be 1-${MAX_LIMIT}`)
     const lb = flag(args, '--lookback-blocks')
+    if (lb !== undefined && !/^[1-9][0-9]*$/.test(lb)) throw new Error('--lookback-blocks must be a positive integer')
     const rows = await listLaunches(client, { limit, lookbackBlocks: lb ? BigInt(lb) : undefined })
     if (json) {
       console.log(JSON.stringify(rows, (_, v) => (typeof v === 'bigint' ? v.toString() : v), 2))
@@ -64,7 +65,7 @@ async function main(argv: string[]) {
     }
     for (const r of rows) {
       const when = new Date(r.time * 1000).toISOString().replace('T', ' ').slice(0, 16)
-      const fee = r.fees.tradeFeeBps === null ? '?' : `${r.fees.tradeFeeBps / 100}%`
+      const fee = r.fees.tradeFeeBps === null ? 'unknown' : `${r.fees.tradeFeeBps / 100}%`
       console.log(`${when}Z  ${r.symbol ?? '?'}  ${r.mode}  quote=${r.quoteSymbol ?? '?'}  trade-fee=${fee}  ${r.token}`)
       console.log(`    tags: ${r.riskTags.join(', ') || '-'}`)
     }

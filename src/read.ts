@@ -41,7 +41,8 @@ export type LaunchInfo = {
   name: string | null
   symbol: string | null
   creator: Address
-  mode: 'instant' | 'queue' | 'curve' | 'handler'
+  /** 链上 Mode 枚举只到 3（Handler）；更大的值是以后追加的玩法，这里不认识就标 unknown。 */
+  mode: 'instant' | 'queue' | 'curve' | 'handler' | 'unknown'
   /** null = 原生 ETH 计价。 */
   quote: Address | null
   quoteSymbol: string | null
@@ -49,7 +50,8 @@ export type LaunchInfo = {
   /** 发射时间，UTC 秒。 */
   time: number
   windowEnd: number
-  fees: { poolFeeBps: number; tradeFeeBps: number | null }
+  /** 找不到 LaunchRules 事件时两项都是 null：不猜。 */
+  fees: { poolFeeBps: number | null; tradeFeeBps: number | null }
   rules: { capBps: number | null; burnBps: number | null; requireTicket: boolean | null }
   socials: { x: boolean; web: boolean; tg: boolean } | null
   riskTags: string[]
@@ -95,6 +97,7 @@ export async function listLaunches(client: PublicClient, opts: ReadOptions = {})
   const limit = Math.min(Math.max(1, opts.limit ?? 20), MAX_LIMIT)
   const call = throttle(opts.minIntervalMs ?? 200)
   const head = await call(() => client.getBlockNumber())
+  if (opts.lookbackBlocks !== undefined && opts.lookbackBlocks <= 0n) throw new Error('lookbackBlocks must be positive')
   const floor = opts.lookbackBlocks ? (head > opts.lookbackBlocks ? head - opts.lookbackBlocks : 0n) : PORTAL_FROM_BLOCK
 
   // 从新往旧一段段扫，够 limit 条就停。
@@ -167,7 +170,7 @@ export async function listLaunches(client: PublicClient, opts: ReadOptions = {})
     }
     const r = ruleOf.get(token.toLowerCase())
     const m = metaOf.get(token.toLowerCase())
-    const mode = MODES[Number(a.mode)] ?? 'handler'
+    const mode = MODES[Number(a.mode)] ?? 'unknown'
     const info: LaunchInfo = {
       token,
       name: await readStr(token, 'name'),
@@ -179,7 +182,7 @@ export async function listLaunches(client: PublicClient, opts: ReadOptions = {})
       block: l.blockNumber,
       time: blockTime.get(l.blockNumber)!,
       windowEnd: Number(a.windowEnd),
-      fees: { poolFeeBps: r ? Number(r.poolFee) / 100 : 100, tradeFeeBps: r ? Number(r.tradeFeeBps) : null },
+      fees: { poolFeeBps: r ? Number(r.poolFee) / 100 : null, tradeFeeBps: r ? Number(r.tradeFeeBps) : null },
       rules: {
         capBps: r ? Number(r.capBps) : null,
         burnBps: r ? Number(r.burnBps) : null,
@@ -198,9 +201,12 @@ export async function listLaunches(client: PublicClient, opts: ReadOptions = {})
 export function riskTags(l: LaunchInfo, ctx: { now: number; sameCreatorInList: number }): string[] {
   const t: string[] = []
   if (l.quote) t.push(`quote:${l.quoteSymbol ?? 'unknown'}`)
+  // 出处：dontblink-mech@5e6516e src/v2/CurveSale.sol:75（MAX_TOTAL_BPS = 500）、:176-177（买卖各自 fee + tax 超过就 revert）
   if (l.mode === 'curve') t.push('curve:creator-tax-possible(fee+tax<=5%)')
   if (l.mode === 'handler') t.push('handler:custom-rules')
+  if (l.mode === 'unknown') t.push('mode:unknown')
   if (l.mode === 'queue' && l.windowEnd > ctx.now) t.push('queue:window-open')
+  // 出处：dontblink-mech@5e6516e src/v2/SoftQuotaRouter.sol:18-19（不要票按 tx.origin 累计，多钱包可绕；要票按票里的 accountId）
   if (l.mode === 'instant' && l.rules.requireTicket === false) t.push('quota:per-tx-origin-only')
   if (l.rules.burnBps) t.push(`burn:${l.rules.burnBps / 100}%`)
   if (l.rules.capBps === null) t.push('rules:not-found')
