@@ -7,8 +7,11 @@ mode, vanity salt, and the stock-quoting tick that fails silently if you get it 
 Signing and broadcasting happen with your own viem wallet. There is no server in the
 middle and nothing to trust us about.
 
+Not on npm yet — it will be published as `@dontblink/sdk`. Until then, install from GitHub:
+
 ```bash
-npm i @dontblink/sdk viem
+git clone https://github.com/dontblink-protocol/dontblink-sdk && cd dontblink-sdk
+npm ci && npm run build
 ```
 
 ---
@@ -131,6 +134,41 @@ with the address computed locally, and throws if it doesn't. Local derivation an
 contract differing by a single byte means your token lands somewhere else — and by then
 you have already paid. Skip it with `options: { verify: false }` if you are batching and
 have already verified once.
+
+---
+
+## Read-only: recent launches, fees, risk tags
+
+For agents and dashboards that only need to look. Nothing here signs or touches a key.
+
+Not published to npm yet — run it from this repo:
+
+```bash
+npm ci && npm run build
+node dist/cli.js launches --limit 20     # newest first, max 50
+node dist/cli.js fees
+```
+
+```ts
+import { listLaunches, getFees } from '@dontblink/sdk'
+
+const launches = await listLaunches(publicClient, { limit: 20 })
+// [{ time, symbol, mode, quoteSymbol, fees, rules, riskTags: ['quote:NVDA', ...] }, ...]
+```
+
+Three rules, on purpose:
+
+- **Facts, not picks.** Results are newest-first and that is the only order. Risk tags are
+  things you can check on-chain (what it is priced in, the mode, burns, how the per-account
+  cap is enforced, repeat creators, missing socials). No scores, no "trending".
+- **No graduation queries.** Bonding-curve progress is not read at all — it only serves
+  racing other buyers.
+- **Rate-limited.** RPC calls are spaced 200 ms apart and a call returns at most 50 launches.
+  The limit is per process: it reads the public Robinhood Chain RPC directly, so several agents
+  running it at once add up. A shared read API with one rate limit is the next step; the z500
+  indexer we run today only indexes the BSC contracts, not the Robinhood Chain portal.
+
+An agent skill wrapping the CLI lives in [`skills/dontblink-readonly`](skills/dontblink-readonly/SKILL.md).
 
 ---
 
